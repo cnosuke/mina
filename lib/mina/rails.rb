@@ -121,7 +121,7 @@ make_run_task[:rake, 'db:migrate']
 #    $ mina console
 
 desc "Starts an interactive console."
-task :console do
+task :console => :environment do
   queue echo_cmd %[cd "#{deploy_to!}/#{current_path!}" && #{rails} console && exit]
 end
 
@@ -132,7 +132,7 @@ end
 namespace :rails do
   # ### rails:db_migrate
   desc "Migrates the Rails database (skips if nothing has changed since the last release)."
-  task :db_migrate do
+  task :db_migrate => :environment do
     if ENV['force_migrate']
       invoke :'rails:db_migrate:force'
     else
@@ -159,7 +159,7 @@ namespace :rails do
 
   # ### rails:db_migrate:force
   desc "Migrates the Rails database."
-  task :'db_migrate:force' do
+  task :'db_migrate:force' => :environment do
     queue %{
       echo "-----> Migrating database"
       #{echo_cmd %[#{rake} db:migrate]}
@@ -168,7 +168,7 @@ namespace :rails do
 
   # ### rails:assets_precompile:force
   desc "Precompiles assets."
-  task :'assets_precompile:force' do
+  task :'assets_precompile:force' => :environment do
     queue %{
       echo "-----> Precompiling asset files"
       #{echo_cmd %[#{rake_assets_precompile}]}
@@ -177,7 +177,7 @@ namespace :rails do
 
   # ### rails:assets_precompile
   desc "Precompiles assets (skips if nothing has changed since the last release)."
-  task :'assets_precompile' do
+  task :'assets_precompile' => :environment do
     if ENV['force_assets']
       invoke :'rails:assets_precompile:force'
     else
